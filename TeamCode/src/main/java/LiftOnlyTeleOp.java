@@ -7,13 +7,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 /**
- * Standalone TeleOp mode for controlling only the Lift mechanism.
- * Includes the LiftController class for simplicity.
+ * Simple Lift TeleOp
+ * Left joystick Y controls the left lift motor
+ * Right joystick Y controls the right lift motor
  */
-@TeleOp(name = "Lift Only TeleOp - 12548", group = "TeleOp")
+@TeleOp(name = "Lift Only TeleOp - 12548 (Joystick Control)", group = "TeleOp")
 public class LiftOnlyTeleOp extends OpMode {
 
-    //private LiftController liftController;
     private DcMotor leftLift = null;
     private DcMotor rightLift = null;
     private final double UP_LIFT_POWER = 1.0;
@@ -34,79 +34,37 @@ public class LiftOnlyTeleOp extends OpMode {
 
         telemetry.addLine("✅ Lift Only TeleOp Initialized");
         telemetry.addLine("Controls:");
-        telemetry.addLine("⬆️ D-Pad Up = Lift Up");
-        telemetry.addLine("⬇️ D-Pad Down = Lift Down");
-        telemetry.addLine("⬅️ D-Pad Left = Stop Lift");
+        telemetry.addLine("🎮 Left Stick Y = Left Lift Up/Down");
+        telemetry.addLine("🎮 Right Stick Y = Right Lift Up/Down");
         telemetry.update();
     }
 
     @Override
     public void loop() {
-        // --- Lift Control via Gamepad 1 D-Pad ---
-        if (gamepad1.dpad_up) {
-            liftUp();
-        } else if (gamepad1.dpad_down) {
-            liftDown();
-        } else if (gamepad1.dpad_left) {
-            stopLift();
-        }
+        // --- Independent Lift Control via Joysticks ---
+        double leftStickY = -gamepad1.left_stick_y;   // Up on joystick = positive
+        double rightStickY = -gamepad1.right_stick_y; // Up on joystick = positive
 
-        // --- Automatic Stop Limits ---
-        int leftCurrentPosition = leftLift.getCurrentPosition();
-        int rightCurrentPosition = rightLift.getCurrentPosition();
-        int MAX_LIFT_POSITION = 45775;
-        int MIN_LIFT_POSITION = 400;
+        // Apply joystick values directly as power
+        leftLift.setPower(leftStickY);
+        rightLift.setPower(rightStickY);
 
-        // Stop if left_lift position is above maximum
-        if (leftCurrentPosition >= MAX_LIFT_POSITION && direction.equals("Up")) {
-            stopLift();
-            telemetry.addLine("⚠️ LEFT_LIFT UP lift height reached!");
-        }
-
-        // Stop if left_lift position is below minimum
-        if (leftCurrentPosition <= MIN_LIFT_POSITION && direction.equals("Down")) {
-            stopLift();
-            telemetry.addLine("⚠️ LEFT_LIFT BOTTOM limit reached!");
-        }
-
-        // Stop if right_lift position is above maximum
-        if (rightCurrentPosition >= MAX_LIFT_POSITION && direction.equals("Up")) {
-            stopLift();
-            telemetry.addLine("⚠️ RIGHT_LIFT UP lift height reached!");
-        }
-
-        // Stop if right_lift position is below minimum
-        if (rightCurrentPosition <= MIN_LIFT_POSITION && direction.equals("Down")) {
-            stopLift();
-            telemetry.addLine("⚠️ RIGHT_LIFT BOTTOM limit reached!");
+        // Determine direction for telemetry
+        if (leftStickY > 0.1 || rightStickY > 0.1) {
+            direction = "Up";
+        } else if (leftStickY < -0.1 || rightStickY < -0.1) {
+            direction = "Down";
+        } else {
+            direction = "Stopped";
         }
 
         // --- Telemetry Feedback ---
-        telemetry.addData("Lift Direction", getDirection());
+        telemetry.addData("Lift Direction", direction);
+        telemetry.addData("Left Lift Power", leftStickY);
+        telemetry.addData("Right Lift Power", rightStickY);
         telemetry.addData("Left Lift Pos", getLeftPosition());
         telemetry.addData("Right Lift Pos", getRightPosition());
         telemetry.update();
-    }
-
-    /** Lift up */
-    private void liftUp() {
-        leftLift.setPower(UP_LIFT_POWER);
-        rightLift.setPower(UP_LIFT_POWER);
-        direction = "Up";
-    }
-
-    /** Lift down */
-    private void liftDown() {
-        leftLift.setPower(-DOWN_LIFT_POWER);
-        rightLift.setPower(-DOWN_LIFT_POWER);
-        direction = "Down";
-    }
-
-    /** Stop the lift */
-    private void stopLift() {
-        leftLift.setPower(0);
-        rightLift.setPower(0);
-        direction = "Stopped";
     }
 
     /** Get direction for telemetry */
@@ -122,7 +80,4 @@ public class LiftOnlyTeleOp extends OpMode {
     private int getRightPosition() {
         return rightLift.getCurrentPosition();
     }
-
-
-
 }

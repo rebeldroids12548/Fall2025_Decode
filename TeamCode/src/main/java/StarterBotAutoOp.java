@@ -28,7 +28,7 @@ public class StarterBotAutoOp extends LinearOpMode {
 
     // Launcher velocities (tune these!)
     private static final double LAUNCHER_VELOCITY_LARGE = 1350;  // close to goal
-    private static final double LAUNCHER_VELOCITY_SMALL = 1900;  // further from goal
+    private static final double LAUNCHER_VELOCITY_SMALL = 1450;  // further from goal
 
     @Override
     public void runOpMode() {
@@ -114,7 +114,7 @@ public class StarterBotAutoOp extends LinearOpMode {
         telemetry.update();
 
         // 1️⃣ Move forward out of the small triangular zone (tune based on field)
-        moveDistance(DRIVE_POWER, 1500);
+        moveDistance(DRIVE_POWER, 2800);
 
         // 2️⃣ Rotate 45° based on team
         if (isRedTeam) {
@@ -126,8 +126,12 @@ public class StarterBotAutoOp extends LinearOpMode {
         // 3️⃣ Launch 3 artifacts toward goal
         launchRings(3, LAUNCHER_VELOCITY_SMALL);
 
-//        // 4️⃣ Move forward again slightly to clear both launch areas
-//        moveDistance(DRIVE_POWER, 1000);
+       // 4️⃣ Strafe right (Red) or left (Blue) to exit large launch area
+        if (isRedTeam) {
+            strafeRight(STRAFE_POWER, 600);
+        } else {
+            strafeLeft(STRAFE_POWER, 600);
+        }
 
         stopMotors();
     }
