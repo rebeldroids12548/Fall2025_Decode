@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  * Left joystick Y controls the left lift motor
  * Right joystick Y controls the right lift motor
  */
-@TeleOp(name = "Lift Only TeleOp - 12548 (Joystick Control)", group = "TeleOp")
+@TeleOp(name = "Lift Only TeleOp - 12548", group = "TeleOp")
 public class LiftOnlyTeleOp extends OpMode {
 
     private DcMotor leftLift = null;

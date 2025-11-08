@@ -27,8 +27,8 @@ public class StarterBotAutoOp extends LinearOpMode {
     private static final double TURN_POWER = 0.4;
 
     // Launcher velocities (tune these!)
-    private static final double LAUNCHER_VELOCITY_LARGE = 1350;  // close to goal
-    private static final double LAUNCHER_VELOCITY_SMALL = 1450;  // further from goal
+    private static final double LAUNCHER_VELOCITY_LARGE = 1250;  // close to goal  1250-1190-1250
+    private static final double LAUNCHER_VELOCITY_SMALL = 1190;  // further from goal 1250-1190
 
     @Override
     public void runOpMode() {
@@ -85,24 +85,27 @@ public class StarterBotAutoOp extends LinearOpMode {
         telemetry.addLine("Running LARGE zone auto...");
         telemetry.update();
 
+        // 2️⃣ Move backward ~6 inches (tune)
+        moveDistance(-DRIVE_POWER, 450); // 465-475
+
         // 1️⃣ Launch 3 artifacts
-        launchRings(3, LAUNCHER_VELOCITY_LARGE);
+        launchRings(5, LAUNCHER_VELOCITY_LARGE);
 
         // 2️⃣ Move backward ~6 inches (tune)
-        moveDistance(-DRIVE_POWER, 800);
+        moveDistance(-DRIVE_POWER, 350);
 
-        // 3️⃣ Rotate right (Red) or left (Blue)
-        if (isRedTeam) {
-            turnRight(TURN_POWER, 500);
-        } else {
-            turnLeft(TURN_POWER, 500);
-        }
+//        // 3️⃣ Rotate right (Red) or left (Blue)
+//        if (isRedTeam) {
+//            turnRight(TURN_POWER, 500);
+//        } else {
+//            turnLeft(TURN_POWER, 500);
+//        }
 
         // 4️⃣ Strafe right (Red) or left (Blue) to exit both launch areas
         if (isRedTeam) {
-            strafeRight(STRAFE_POWER, 2000);
+            strafeRight(STRAFE_POWER, 1400);
         } else {
-            strafeLeft(STRAFE_POWER, 2000);
+            strafeLeft(STRAFE_POWER, 1400);
         }
 
         stopMotors();
@@ -118,19 +121,22 @@ public class StarterBotAutoOp extends LinearOpMode {
 
         // 2️⃣ Rotate 45° based on team
         if (isRedTeam) {
-            turnRight(TURN_POWER, 130); // approximate 45 degrees
+            turnRight(TURN_POWER, 480); // approximate 45 degrees 160-320-480-500
         } else {
-            turnLeft(TURN_POWER, 130);
+            turnLeft(TURN_POWER, 480);
         }
 
+        // Move forward for 150ms
+        moveDistance(DRIVE_POWER, 500);  //150-250
+
         // 3️⃣ Launch 3 artifacts toward goal
-        launchRings(3, LAUNCHER_VELOCITY_SMALL);
+        launchRings(5, LAUNCHER_VELOCITY_SMALL);
 
        // 4️⃣ Strafe right (Red) or left (Blue) to exit large launch area
         if (isRedTeam) {
-            strafeRight(STRAFE_POWER, 600);
+            strafeRight(STRAFE_POWER, 900);
         } else {
-            strafeLeft(STRAFE_POWER, 600);
+            strafeLeft(STRAFE_POWER, 900);
         }
 
         stopMotors();
@@ -199,13 +205,22 @@ public class StarterBotAutoOp extends LinearOpMode {
 
         for (int i = 0; i < count; i++) {
             //launcher.setPower(1.0);
-            sleep(500); // spin up
+            sleep(500); // spin up  500-1500
+
+            if (i == 1) {
+                // 2️⃣ Move backward ~6 inches (tune)
+                moveDistance(DRIVE_POWER, 200);
+            }
+
             loaderLeft.setPower(1.0);
             loaderRight.setPower(1.0);
-            sleep(500); // feed one artifact
+
+            sleep(500); // feed one artifact 500-1500
+
             loaderLeft.setPower(0);
             loaderRight.setPower(0);
-            sleep(400);
+
+            sleep(1500);  //400-1500
         }
 
         launcher.setPower(0);

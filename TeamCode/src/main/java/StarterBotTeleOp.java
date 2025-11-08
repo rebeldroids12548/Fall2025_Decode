@@ -37,11 +37,15 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.teamcode.DeflectorPositions;
+
+
 
 /*
  * This file includes a teleop (driver-controlled) file for the goBILDA® StarterBot for the
@@ -83,7 +87,7 @@ public class StarterBotTeleOp extends OpMode {
     private DcMotorEx launcher = null;
     private CRServo leftFeeder = null;
     private CRServo rightFeeder = null;
-    private CRServo artifactDeflector = null;
+    private Servo artifactDeflector = null;
 
 
     ElapsedTime feederTimer = new ElapsedTime();
@@ -186,9 +190,10 @@ public class StarterBotTeleOp extends OpMode {
          */
         leftFeeder.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        artifactDeflector = hardwareMap.get(CRServo.class, "artifact_deflector");
-        artifactDeflector.setDirection(DcMotorSimple.Direction.FORWARD);
-        artifactDeflector.setPower(0);
+        // Initiate the servo controlling the artifact deflector
+        artifactDeflector = hardwareMap.get(Servo.class, "artifact_deflector");
+        // Initialize to same position as large launch zone
+        artifactDeflector.setPosition(DeflectorPositions.LARGE_ZONE_POSITION);
 
 
         /*
@@ -249,11 +254,19 @@ public class StarterBotTeleOp extends OpMode {
         telemetry.addData("State", launchState);
         telemetry.addData("motorSpeed", launcher.getVelocity());
 
-        // --- Artifact Deflector Control ---
-        double deflectorPower = -gamepad2.right_stick_y; // use gamepad2 right stick for deflector
-        if (Math.abs(deflectorPower) < 0.1) deflectorPower = 0;
-        artifactDeflector.setPower(deflectorPower);
-        telemetry.addData("Deflector Power", deflectorPower);
+        // --- Artifact Deflector Controls ---
+        // D-pad UP  → deflector left
+        // D-pad DOWN → deflector right
+        // D-pad LEFT → deflector reset (position 0)
+        if (gamepad1.dpad_up) {
+            artifactDeflector.setPosition(DeflectorPositions.LARGE_ZONE_POSITION); // left (more pull)
+        }
+        else if (gamepad1.dpad_down) {
+            artifactDeflector.setPosition(DeflectorPositions.SMALL_ZONE_POSITION); // right (less pull)
+        }
+        else if (gamepad1.dpad_left) {
+            artifactDeflector.setPosition(0.0); // reset / neutral
+        }
     }
 
     /*
