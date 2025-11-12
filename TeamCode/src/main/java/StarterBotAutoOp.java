@@ -27,11 +27,12 @@ public class StarterBotAutoOp extends LinearOpMode {
     private static final double TURN_POWER = 0.4;
 
     // Launcher velocities (tune these!)
-    private static final double LAUNCHER_VELOCITY_LARGE = 1250;  // close to goal  1250-1190-1250
-    private static final double LAUNCHER_VELOCITY_SMALL = 1190;  // further from goal 1250-1190
+    private static final double LAUNCHER_VELOCITY_LARGE = 1225;  // close to goal  1250-1190-1250
+    private static final double LAUNCHER_VELOCITY_SMALL = 1250;  // further from goal 1250-1190
 
     @Override
     public void runOpMode() {
+
         // Initialize hardware
         frontLeft = hardwareMap.get(DcMotorEx.class, "left_front_drive");
         frontRight = hardwareMap.get(DcMotorEx.class, "right_front_drive");
@@ -68,12 +69,15 @@ public class StarterBotAutoOp extends LinearOpMode {
         }
 
         waitForStart();
+
         if (isStopRequested()) return;
 
         // Execute based on selection
         if (isLargeZone) {
+
             runLargeZoneAuto();
         } else {
+            sleep(5000);
             runSmallZoneAuto();
         }
 
@@ -220,7 +224,7 @@ public class StarterBotAutoOp extends LinearOpMode {
             loaderLeft.setPower(0);
             loaderRight.setPower(0);
 
-            sleep(1500);  //400-1500
+            sleep(400);  //400-1500
         }
 
         launcher.setPower(0);
